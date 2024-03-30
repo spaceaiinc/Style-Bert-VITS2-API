@@ -27,6 +27,5 @@ COPY *.py .
 COPY server_fastapi.py .
 COPY start.sh .
 COPY server_fastapi.py .
-COPY initialize.py .
 # ENTRYPOINT [ "python" ]
 CMD [ "./start.sh" ]
