@@ -15,16 +15,26 @@ def download_bert_models():
         local_path = Path("bert").joinpath(k)
         for file in v["files"]:
             if not Path(local_path).joinpath(file).exists():
-                logger.info(f"Downloading {k} {file}")
-                hf_hub_download(v["repo_id"], file, local_dir=local_path)
+                logger.info(f"{k} {file}をダウンロード中")
+                hf_hub_download(
+                    v["repo_id"],
+                    file,
+                    local_dir=local_path,
+                    local_dir_use_symlinks=False,
+                )
 
 
 def download_slm_model():
     local_path = Path("slm/wavlm-base-plus/")
     file = "pytorch_model.bin"
     if not Path(local_path).joinpath(file).exists():
-        logger.info(f"Downloading wavlm-base-plus {file}")
-        hf_hub_download("microsoft/wavlm-base-plus", file, local_dir=local_path)
+        logger.info(f"wavlm-base-plus {file}をダウンロード中")
+        hf_hub_download(
+            "microsoft/wavlm-base-plus",
+            file,
+            local_dir=local_path,
+            local_dir_use_symlinks=False,
+        )
 
 
 def download_pretrained_models():
@@ -32,9 +42,12 @@ def download_pretrained_models():
     local_path = Path("pretrained")
     for file in files:
         if not Path(local_path).joinpath(file).exists():
-            logger.info(f"Downloading pretrained {file}")
+            logger.info(f"pretrained {file}をダウンロード中")
             hf_hub_download(
-                "litagin/Style-Bert-VITS2-1.0-base", file, local_dir=local_path
+                "litagin/Style-Bert-VITS2-1.0-base",
+                file,
+                local_dir=local_path,
+                local_dir_use_symlinks=False,
             )
 
 
@@ -43,9 +56,12 @@ def download_jp_extra_pretrained_models():
     local_path = Path("pretrained_jp_extra")
     for file in files:
         if not Path(local_path).joinpath(file).exists():
-            logger.info(f"Downloading JP-Extra pretrained {file}")
+            logger.info(f"JP-Extra pretrained {file}をダウンロード中")
             hf_hub_download(
-                "litagin/Style-Bert-VITS2-2.0-base-JP-Extra", file, local_dir=local_path
+                "litagin/Style-Bert-VITS2-2.0-base-JP-Extra",
+                file,
+                local_dir=local_path,
+                local_dir_use_symlinks=False,
             )
 
 
@@ -66,7 +82,7 @@ def download_jvnv_models():
     ]
     for file in files:
         if not Path(f"model_assets/{file}").exists():
-            logger.info(f"Downloading {file}")
+            logger.info(f"{file}をダウンロード中")
             hf_hub_download(
                 "litagin/style_bert_vits2_jvnv",
                 file,
@@ -82,13 +98,13 @@ def main():
     parser.add_argument(
         "--dataset_root",
         type=str,
-        help="Dataset root path (default: Data)",
+        help="データセットのルートパス (デフォルト: Data)",
         default=None,
     )
     parser.add_argument(
         "--assets_root",
         type=str,
-        help="Assets root path (default: model_assets)",
+        help="アセットのルートパス (デフォルト: model_assets)",
         default=None,
     )
     args = parser.parse_args()
@@ -105,7 +121,7 @@ def main():
     if args.dataset_root is None and args.assets_root is None:
         return
 
-    # Change default paths if necessary
+    # 必要に応じてデフォルトパスを変更
     paths_yml = Path("configs/paths.yml")
     with open(paths_yml, "r", encoding="utf-8") as f:
         yml_data = yaml.safe_load(f)
