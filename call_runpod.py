@@ -25,23 +25,6 @@ file_path = "runpod_test_voice.wav"
 model_id = 0
 
 
-# テキストを句読点で分割し、各セグメントが100文字以内になるようにする関数
-def split_text(text, max_length=100):
-    segments = []
-    current_segment = ""
-    for part in text.split("。"):
-        if part:
-            part += "。"
-        if len(current_segment) + len(part) > max_length:
-            segments.append(current_segment)
-            current_segment = part
-        else:
-            current_segment += part
-    if current_segment:
-        segments.append(current_segment)
-    return segments
-
-
 # APIから音声データを取得する関数
 def fetch_audio_from_api(text):
     headers = {
@@ -62,24 +45,49 @@ def fetch_audio_from_api(text):
         raise Exception(f"API call failed with status code {response.status_code}")
 
 
-# 複数のWAV音声データを結合する関数
-def combine_wav_files(audio_data_list, output_file_path):
-    output_wav = wave.open(output_file_path, "wb")
+# 沈黙（無音）のデータを生成する関数
+def generate_silence(duration_ms, sample_rate, num_channels):
+    num_samples = int(sample_rate * duration_ms / 1000.0)
+    # 16ビットの無音データは0で、num_channels分のチャンネルごとに0を配置
+    silence_data = (b"\x00\x00" * num_samples) * num_channels
+    return silence_data
+
+
+# テキストを一文字ずつ処理し、句読点ごとに音声データを取得して結合する関数
+def process_text_and_fetch_audio(text, file_path):
+    output_wav = wave.open(file_path, "wb")
     first = True
-    for audio_data in audio_data_list:
+    segment = ""
+    for char in text:
+        if char in ["。", "、"]:
+            if segment:
+                audio_data = fetch_audio_from_api(segment)
+                with wave.open(BytesIO(audio_data), "rb") as wav_file:
+                    if first:
+                        output_wav.setparams(wav_file.getparams())
+                        first = False
+                    output_wav.writeframes(wav_file.readframes(wav_file.getnframes()))
+                segment = ""
+            silence_duration_ms = 700 if char == "。" else 300
+            silence_data = generate_silence(
+                silence_duration_ms,
+                output_wav.getframerate(),
+                output_wav.getnchannels(),
+            )
+            output_wav.writeframes(silence_data)
+        else:
+            segment += char
+    # 最後のセグメントがあれば処理
+    if segment:
+        audio_data = fetch_audio_from_api(segment)
         with wave.open(BytesIO(audio_data), "rb") as wav_file:
-            if first:
-                output_wav.setparams(wav_file.getparams())
-                first = False
             output_wav.writeframes(wav_file.readframes(wav_file.getnframes()))
     output_wav.close()
 
 
 if __name__ == "__main__":
     try:
-        segments = split_text(text)
-        audio_data_list = [fetch_audio_from_api(segment) for segment in segments]
-        combine_wav_files(audio_data_list, file_path)
+        process_text_and_fetch_audio(text, file_path)
         print(f"Audio saved to {file_path}")
     except Exception as e:
         print(f"Error: {e}")
