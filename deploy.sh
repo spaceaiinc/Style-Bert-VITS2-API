@@ -1,5 +1,5 @@
 #!/bin/bash
-USER="xxxx"
+USER="hidenariyuda"
 APP_NAME="runpod-style-bert-vits2-api"
 VERSION=1.0.0
 

@@ -90,6 +90,22 @@ def download_jvnv_models():
                 local_dir_use_symlinks=False,
             )
 
+def download_custom_models():
+    files = [
+        "kana20240612/config.json",
+        "kana20240612/kana20240612_e100_s300.safetensors",
+        "kana20240612/style_vectors.npy",
+    ]
+    for file in files:
+        if not Path(f"model_assets/{file}").exists():
+            logger.info(f"{file}をダウンロード中")
+            hf_hub_download(
+                "spaceaiinc/style_bert_vits2_kana",
+                file,
+                local_dir="model_assets",
+                local_dir_use_symlinks=False,
+            )
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -111,8 +127,10 @@ def main():
 
     download_bert_models()
 
-    if not args.skip_jvnv:
-        download_jvnv_models()
+    # download_custom_models()
+
+    # if not args.skip_jvnv:
+    #     download_jvnv_models()
     if not args.only_infer:
         download_slm_model()
         download_pretrained_models()

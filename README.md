@@ -1,6 +1,8 @@
-# Style-Bert-VITS2
+# Style-Bert-VITS2-API
 
-Bert-VITS2 with more controllable voice styles.
+Bert-VITS2 API with more controllable voice styles.
+
+- [How To Deploy](https://note.com/nyosubro/n/n086acab985ed)
 
 https://github.com/litagin02/Style-Bert-VITS2/assets/139731664/e853f9a2-db4a-4202-a1dd-56ded3c562a0
 
