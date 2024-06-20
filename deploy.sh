@@ -14,4 +14,4 @@ case "$yn" in [yY]*) ;; *) echo "中止します" ; exit ;; esac
 sudo DOCKER_BUILDKIT=1 docker build --progress=plain . -f Dockerfile.runpod -t $USER/$APP_NAME:$VERSION
 
 # pushコマンド
-sudo docker push $USER/$APP_NAME:$VERSION
+docker push $USER/$APP_NAME:$VERSION
