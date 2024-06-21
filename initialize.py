@@ -125,7 +125,7 @@ def main():
     )
     args = parser.parse_args()
 
-    download_bert_models()
+    # download_bert_models()
 
     # download_custom_models()
 
